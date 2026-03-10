@@ -23,6 +23,15 @@
 - `git commit -m "..."`
 - `git push origin main`
 
+## Доступы для настройки аналитики и деплоя
+
+Нужны заранее:
+
+- GitHub: `write` в `melbet-landing`;
+- Cloudflare: доступ к `Workers & Pages` + домену;
+- Google Analytics 4: роль `Editor` или `Administrator`;
+- (опционально) Google Tag Manager: право `Publish`.
+
 ## Критерии качества
 - изменения не ломают адаптив;
 - навигация и ссылки работают;

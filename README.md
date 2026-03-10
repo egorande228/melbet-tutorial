@@ -1,114 +1,144 @@
 # MelBet Tutorial
 
-Этот репозиторий для обучения по проекту MelBet Landing.
+Практическая инструкция по проекту `melbet-landing`:
+`https://github.com/egorande228/melbet-landing.git`
 
-## 1. Что в основном проекте
-
-Базовая структура:
+## 1. Структура проекта
 
 - `index.html` - главная страница;
-- `contact.html` - форма заявки;
-- `css/styles.css` - глобальные стили и блоки интерфейса;
+- `contact.html` - страница формы;
+- `css/styles.css` - общие стили и анимации;
 - `css/contact.css` - стили формы;
-- `js/main.js` - интерактив на главной;
-- `js/contact.js` - интерактив формы;
-- `js/i18n.js` - переключение языков и переводы;
-- `assets/` - изображения и иконки.
+- `js/main.js` - интерактив главной;
+- `js/contact.js` - логика отправки формы;
+- `js/i18n.js` - все переводы и переключение языков;
+- `assets/` - логотипы, иконки, изображения.
 
 ## 2. Локальный запуск
-
-Открыть проект локально:
 
 ```bash
 cd "/Users/egorande/Documents/Melbet landing Akram/melbet-landing"
 python3 -m http.server 5500
 ```
 
-Открыть в браузере:
+Проверка в браузере: `http://localhost:5500`
 
-- `http://localhost:5500`
+## 3. Языки и RTL
 
-Остановить сервер:
+Поддерживаемые языки:
 
-- `Ctrl + C`
-
-## 3. Мультиязычность
-
-На сайте есть переключатель языков:
-
-- `ENG`
-- `ARABIC`
-- `FRENCH`
-- `AMHARIC`
+- English (`eng`)
+- العربية (`arab`)
+- Français (`franch`)
+- Español (`esp`)
+- فارسی (`farsi`)
+- Монгол хэл (`mongol`)
+- Af-Soomaali (`somali`)
+- Português (`portug`)
+- አማርኛ (`amharic`)
+- Türkçe (`turk`)
+- Русский (`russian`)
 
 Важно:
 
-- переводы лежат в `js/i18n.js`;
-- выбранный язык хранится в `localStorage` (`melbet_lang`);
-- для арабского выставляется `dir="rtl"` и шрифт `Tajawal`;
-- для остальных используется `Sarala`.
+- все тексты лежат в `js/i18n.js`;
+- текущий язык хранится в `localStorage` (`melbet_lang`);
+- для RTL-языков включается `dir="rtl"`;
+- цифры в RTL-статистике принудительно отображаются слева-направо (`.stat-num`).
 
-## 4. Ключевые контентные точки
+## 4. Форма заявок и лиды
 
-### Teamcash program
+Форма на `contact.html` отправляет данные в Google Apps Script через:
 
-Блок `Teamcash program` на главной содержит SVG-схему потоков.
+- `data-sheet-endpoint="https://script.google.com/macros/s/.../exec"`
 
-Где менять:
+Минимальный поток:
 
-- разметка схемы: `index.html`;
-- стили схемы: `css/styles.css` (селекторы `flow-*`);
-- тексты для всех языков: `js/i18n.js`.
+1. Пользователь отправляет форму.
+2. `js/contact.js` валидирует поля.
+3. Данные уходят в Apps Script endpoint.
+4. Скрипт пишет лид в Google Sheets.
 
-### Контакты
+Что нужно держать актуальным:
 
-Текущие ссылки:
+- URL `data-sheet-endpoint` в `contact.html`;
+- названия полей и валидация в `js/contact.js`;
+- доступ sales-менеджеров к Google Sheet (роль Viewer/Editor).
 
-- WhatsApp: `https://wa.me/37455256035`
-- Telegram: `https://t.me/Melbetpartnerships`
-- Email: `partnerships@melbet.com`
+## 5. Деплой в Cloudflare Pages
 
-Где менять:
+Рекомендуемая настройка для этого лендинга:
 
-- `index.html` (контакт-секция);
-- `index.html` и `contact.html` (floating chat dock).
+- Framework preset: `None`
+- Build command: пусто
+- Build output directory: `/`
+- Production branch: `main`
 
-## 5. Форма заявки
+После первого деплоя:
 
-Текущее состояние:
+1. Добавить кастомные домены:
+   - `melbetcollaborations.com`
+   - `www.melbetcollaborations.com`
+2. Проверить статус `Active` и `SSL enabled` для обоих доменов.
+3. Включить редирект `www -> root` (301).
+4. В SSL/TLS выбрать `Full (strict)` (если origin-сертификаты валидны).
 
-- форма визуально готова;
-- `action="#"` - данные пока не отправляются на сервер.
+## 6. Подключение Google Analytics 4
 
-Чтобы включить отправку:
+### Что нужно получить заранее
 
-1. сделать backend endpoint, например `POST /api/lead`;
-2. валидировать поля на сервере;
-3. отправлять лиды в CRM/Google Sheets/Telegram;
-4. вернуть статус для UI (`success/error`).
+- `GA4 Measurement ID` вида `G-XXXXXXXXXX`.
+- Доступ в Google Analytics:
+  - минимум `Editor`;
+  - лучше `Administrator` на Property.
 
-## 6. Git-процесс
+### Какие доступы нужны для внедрения
 
-Базовые команды:
+- GitHub `write` к `melbet-landing` (чтобы внести код и запушить).
+- Cloudflare Pages доступ (чтобы проконтролировать деплой).
+- Google Analytics доступ (`Editor`/`Administrator`).
+
+### Варианты подключения
+
+1. Напрямую `gtag.js` в `index.html` и `contact.html`.
+2. Через Google Tag Manager (`GTM-XXXXXXX`), если планируется много тегов.
+
+### Базовые события для старта
+
+- `page_view` (автоматически);
+- `generate_lead` при успешной отправке формы;
+- `click_contact` для кликов по Telegram/WhatsApp.
+
+## 7. Перформанс (без удаления функций)
+
+Что уже применялось и стоит сохранять:
+
+- throttled scroll на `requestAnimationFrame`;
+- оптимизация инициализации `i18n` (без лишней перерисовки на `eng`);
+- `content-visibility` для секций;
+- отключение тяжелых анимаций только для `prefers-reduced-motion`.
+
+## 8. Git-процесс
 
 ```bash
-git status
+git status -sb
 git add .
-git commit -m "message"
+git commit -m "Short clear message"
 git push origin main
 ```
 
-Рекомендации:
+Практика:
 
-- коммиты делать маленькими и логичными;
-- перед пушем проверять мобильный вид и ссылки;
-- не коммитить системные файлы (`.DS_Store`).
+- не коммитить `.DS_Store`;
+- пушить маленькими логичными коммитами;
+- после пуша проверять сайт на mobile.
 
-## 7. Чек-лист перед публикацией
+## 9. Быстрый чек-лист перед релизом
 
-- сайт открывается локально;
-- нет дублей текста и битых ссылок;
-- языки переключаются корректно;
-- арабская версия не ломает верстку;
-- форма и кнопки чата видны на desktop и mobile;
-- `git status` чистый (кроме намеренных изменений).
+- сайт открывается и скролл не тормозит на телефоне;
+- все 11 языков переключаются;
+- RTL-верстка и цифры отображаются корректно;
+- форма отправляет лид в таблицу;
+- домены `root` и `www` активны, SSL зеленый;
+- редирект `www -> root` работает (301);
+- в аналитике идут события.
