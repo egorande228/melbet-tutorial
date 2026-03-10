@@ -37,3 +37,9 @@
 - навигация и ссылки работают;
 - анимации не мешают чтению контента;
 - форма контактов заполняется корректно.
+
+## Пост-релиз проверка (обязательно)
+- GA4 Realtime: есть `form_sent`, `click_whatsapp`, `click_telegram`;
+- GA4 Events: `form_sent` отмечен как key event;
+- Search Console: `sitemap.xml` принят без ошибок;
+- URL Inspection: главная и contact отправлены на индексацию.

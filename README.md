@@ -103,13 +103,45 @@ python3 -m http.server 5500
 1. Напрямую `gtag.js` в `index.html` и `contact.html`.
 2. Через Google Tag Manager (`GTM-XXXXXXX`), если планируется много тегов.
 
-### Базовые события для старта
+### Реализованные события (фактически в проекте)
 
-- `page_view` (автоматически);
-- `generate_lead` при успешной отправке формы;
-- `click_contact` для кликов по Telegram/WhatsApp.
+- `page_view` (автоматически через `gtag config`);
+- `form_sent` при успешной отправке формы;
+- `click_whatsapp` при клике по ссылкам `wa.me`;
+- `click_telegram` при клике по ссылкам `t.me`.
 
-## 7. Перформанс (без удаления функций)
+### Важный шаг в GA4 после запуска
+
+1. Открыть `Admin -> Events`.
+2. Найти событие `form_sent`.
+3. Включить `Mark as key event` (конверсия).
+
+## 7. SEO и индексация (что уже сделано)
+
+В проект уже добавлено:
+
+- `robots.txt` в корне;
+- `sitemap.xml` в корне;
+- canonical URL на главной и contact-странице;
+- Open Graph + Twitter meta;
+- schema.org разметка (`Organization`, `WebSite`, `ContactPage`).
+
+### Подключение Google Search Console (доменный ресурс)
+
+1. Добавить `melbetcollaborations.com` как `Доменный ресурс`.
+2. Подтвердить через DNS TXT (Cloudflare).
+3. В разделе `Sitemaps` отправить:
+   - `https://melbetcollaborations.com/sitemap.xml`
+4. В `Проверка URL` отправить на индексацию:
+   - `https://melbetcollaborations.com/`
+   - `https://melbetcollaborations.com/contact.html`
+
+### Что значит статус "URL есть в индексе Google"
+
+- Страница уже индексируется.
+- Если страница менялась, нажать `Запросить индексирование`.
+
+## 8. Перформанс (без удаления функций)
 
 Что уже применялось и стоит сохранять:
 
@@ -118,7 +150,7 @@ python3 -m http.server 5500
 - `content-visibility` для секций;
 - отключение тяжелых анимаций только для `prefers-reduced-motion`.
 
-## 8. Git-процесс
+## 9. Git-процесс
 
 ```bash
 git status -sb
@@ -133,7 +165,7 @@ git push origin main
 - пушить маленькими логичными коммитами;
 - после пуша проверять сайт на mobile.
 
-## 9. Быстрый чек-лист перед релизом
+## 10. Быстрый чек-лист перед релизом
 
 - сайт открывается и скролл не тормозит на телефоне;
 - все 11 языков переключаются;
@@ -141,4 +173,5 @@ git push origin main
 - форма отправляет лид в таблицу;
 - домены `root` и `www` активны, SSL зеленый;
 - редирект `www -> root` работает (301);
-- в аналитике идут события.
+- в аналитике идут события `form_sent`, `click_whatsapp`, `click_telegram`;
+- sitemap отправлен в Search Console, ключевые URL на индексации.
